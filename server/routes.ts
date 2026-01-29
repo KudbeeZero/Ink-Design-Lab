@@ -1,19 +1,33 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { openai } from "./replit_integrations/image/client"; // Use the integrated client
+import { openai } from "./replit_integrations/image/client";
+import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  await setupAuth(app);
+  registerAuthRoutes(app);
+
+  app.get(api.auth.me.path, async (req: any, res) => {
+    if (!req.isAuthenticated()) return res.json(null);
+    const replitUser = req.user.claims;
+    const user = await storage.getOrCreateUserByReplitId(replitUser.sub, replitUser.name || replitUser.email);
+    res.json({ id: user.id, username: user.username });
+  });
+
   // Generate tattoo design
-  app.post(api.designs.generate.path, async (req, res) => {
+  app.post(api.designs.generate.path, isAuthenticated, async (req: any, res) => {
     try {
+      const replitUser = req.user.claims;
+      const user = await storage.getOrCreateUserByReplitId(replitUser.sub, replitUser.name || replitUser.email);
+      
       const { prompt, style } = api.designs.generate.input.parse(req.body);
       
-      const fullPrompt = `Tattoo design of ${prompt}, style: ${style}, white background, high contrast, clean lines, professional tattoo flash sheet style`;
+      const fullPrompt = `Masterpiece tattoo flash sheet, ${prompt}, ${style} style, isolated on pure white background, ultra-high contrast black ink, sharp professional linework, clean vector-like precision, cinematic lighting on the artwork, 8k resolution, minimalist masterpiece.`;
 
       const response = await openai.images.generate({
         model: "gpt-image-1",
@@ -28,7 +42,7 @@ export async function registerRoutes(
         throw new Error("Failed to generate image from OpenAI");
       }
 
-      const design = await storage.createDesign({
+      const design = await storage.createDesign(user.id, {
         prompt,
         style,
         imageUrl,
@@ -42,8 +56,11 @@ export async function registerRoutes(
   });
 
   // List designs
-  app.get(api.designs.list.path, async (req, res) => {
-    const designs = await storage.getDesigns();
+  app.get(api.designs.list.path, isAuthenticated, async (req: any, res) => {
+    const replitUser = req.user.claims;
+    const user = await storage.getOrCreateUserByReplitId(replitUser.sub, replitUser.name || replitUser.email);
+    
+    const designs = await storage.getDesigns(user.id);
     res.json(designs);
   });
 

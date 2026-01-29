@@ -2,6 +2,15 @@ import { z } from "zod";
 import { insertDesignSchema, designs } from "./schema";
 
 export const api = {
+  auth: {
+    me: {
+      method: "GET" as const,
+      path: "/api/me",
+      responses: {
+        200: z.object({ id: z.number(), username: z.string() }).nullable(),
+      },
+    },
+  },
   designs: {
     generate: {
       method: "POST" as const,
@@ -11,8 +20,9 @@ export const api = {
         style: z.string().min(1, "Style is required"),
       }),
       responses: {
-        201: z.custom<typeof designs.$inferSelect>(), // Returns the created design
+        201: z.custom<typeof designs.$inferSelect>(),
         400: z.object({ message: z.string() }),
+        401: z.object({ message: z.string() }),
         500: z.object({ message: z.string() }),
       },
     },

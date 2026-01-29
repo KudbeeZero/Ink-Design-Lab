@@ -1,84 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Montserrat:wght@300;400;500;600;700&family=UnifrakturMaguntia&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Dark, Edgy Tattoo Studio Palette */
-  --background: 0 0% 5%;       /* Almost black */
-  --foreground: 0 0% 95%;      /* Off-white */
-  
-  --primary: 0 0% 98%;         /* Stark White for primary actions */
-  --primary-foreground: 0 0% 5%;
-  
-  --secondary: 0 0% 12%;       /* Dark Gray for cards */
-  --secondary-foreground: 0 0% 98%;
-  
-  --muted: 0 0% 15%;
-  --muted-foreground: 0 0% 60%;
-  
-  --accent: 0 100% 65%;        /* Electric Red for subtle accents */
-  --accent-foreground: 0 0% 98%;
-  
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-
-  --border: 0 0% 20%;
-  --input: 0 0% 20%;
-  --ring: 0 0% 80%;
-
-  --radius: 0rem; /* Sharp edges for edgy feel */
-
-  /* Fonts */
-  --font-display: 'Cinzel Decorative', cursive;
-  --font-body: 'Montserrat', sans-serif;
-  --font-tattoo: 'UnifrakturMaguntia', cursive;
+@layer base {
+  :root {
+    --background: 0 0% 2%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 9%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 100% 50%;
+    --radius: 0.5rem;
+  }
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-accent selection:text-white;
-    font-family: var(--font-body);
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(50, 50, 50, 0.3) 0%, transparent 50%),
-      linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)),
-      url("https://www.transparenttextures.com/patterns/dark-leather.png"); /* Subtle texture */
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    @apply font-bold tracking-tight text-white;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  @apply bg-background;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-border rounded-none;
-}
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground;
+.font-tattoo {
+  font-family: 'Architects Daughter', cursive;
 }
 
-/* Utilities */
-.text-tattoo {
-  font-family: var(--font-tattoo);
+.glass {
+  @apply bg-background/60 backdrop-blur-xl border-white/5;
 }
 
-.glass-panel {
-  @apply bg-secondary/80 backdrop-blur-md border border-white/10 shadow-2xl;
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  @apply fixed inset-0 z-50;
 }
 
-.neon-glow {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+.hover-elevate {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20;
 }
 
-.red-glow {
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.15);
+.active-elevate-2 {
+  @apply active:scale-95 transition-transform;
 }
