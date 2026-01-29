@@ -8,7 +8,7 @@ export * from "./models/auth";
 
 export const designs = pgTable("designs", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id),
+  userId: text("user_id").references(() => users.id),
   prompt: text("prompt").notNull(),
   style: text("style").notNull(),
   imageUrl: text("image_url").notNull(),
